@@ -50,7 +50,7 @@ url
 ### 📌 와이어 프레임
 <p align='center'>
   <p>1차 와이어 프레임</p>
-  <img src="./README/images/wireframe_1.png" width="600px" />
+  <img src="./README/images/wireframe_2.png" width="600px" />
 </p>
 
 
