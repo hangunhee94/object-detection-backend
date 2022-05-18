@@ -26,10 +26,10 @@ url
   - 공통 backend
     - 데이터 분석, AI 모델 개발
 
-  - 엄관용(팀장) : frontend : CSS UI(후반작업) / backend : 
-  - 나성근 : frontend : login / backend : 
-  - 한건희 : frontend : sginup / backend : 
-  - 이동현 : frontend : main / backend : 
+  - 엄관용(팀장) : frontend : CSS UI(후반작업) / backend : main
+  - 나성근 : frontend : login / backend : 머신러닝 데이터 분류, 코드단 세팅
+  - 한건희 : frontend : sginup / backend : sginup 
+  - 이동현 : frontend : main / backend : login
 
 <!-- ### 📌 기술 선택 이유! - <a href="https://github.com/rayrayj92/triport/wiki/%EA%B8%B0%EC%88%A0-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0" >상세보기 - WIKI 이동</a> -->
 
