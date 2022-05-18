@@ -7,20 +7,29 @@
 <!--  팀 이미지  -->
 </p>
 
+
 ### 🔗 시연 영상
 url 
 
+
 ### 🏠 소개
-랜드마크 위치 검색
+'당신의 예상되는 나이는?'  
+자신의 얼굴 나이는 얼마나 될까, 궁금한 사람들을 위한 웹사이트.  
+
 
 ### ⏲️ 개발기간
 2022년 05월 18일 ~ 2021년 05월 25일
 
+
 ### 🧙 맴버구성
-- :Frontend
-  - 
-- :Backend - (https://github.com/eungenie/SpringBoot-Project-Triport)
-  - 엄관용, 나성근, 한건희, 이동현
+- Backend - (깃헙 주소)
+  - 공통 backend
+    - 데이터 분석, AI 모델 개발
+
+  - 엄관용(팀장) : frontend : CSS UI(후반작업) / backend : 
+  - 나성근 : frontend : login / backend : 
+  - 한건희 : frontend : sginup / backend : 
+  - 이동현 : frontend : main / backend : 
 
 <!-- ### 📌 기술 선택 이유! - <a href="https://github.com/rayrayj92/triport/wiki/%EA%B8%B0%EC%88%A0-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0" >상세보기 - WIKI 이동</a> -->
 
@@ -50,9 +59,17 @@ url
 ### 📌 와이어 프레임
 <p align='center'>
   <p>1차 와이어 프레임</p>
-  <img src="./README/images/wireframe_1.png" width="600px" />
+  <img src="./README/images/wireframe_2.png" width="600px" />
 </p>
 
+
+### 📌 API 설계
+https://coherent-crayon-100.notion.site/API-c0d7c1bef57047cc92deb939fa6c0052  
+
+<p align='center'>
+  <p>1차 와이어 프레임</p>
+  <img src="./README/images/API_1.png" width="600px" />
+</p>
 
 ### 📌 일정
 5 / 18 기획 & 목업(S.A) / backend : 랜드마크 데이터 셋 모델 구현(필수), DB api 설계 / frontend : 로그인, 회원가입 폼 구현(추가)  
