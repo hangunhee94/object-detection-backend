@@ -80,3 +80,4 @@ https://coherent-crayon-100.notion.site/API-c0d7c1bef57047cc92deb939fa6c0052
 5 / 23 1차 마감(병합), 코드리뷰  
 5 / 24 GIT 정리 & 발표 영상 녹화 & 제출 (오후 5시)  
 
+#### 데이터 학습 결과 표(https://docs.google.com/spreadsheets/d/1hg_YwVelVWKVhCj8pfvkhSnO_PIEEOwVqgbXlPY7yyA/edit#gid=0)
