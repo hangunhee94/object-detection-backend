@@ -1,5 +1,6 @@
 from io import BytesIO
 from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
 from PIL import Image
 import base64
 from pymongo import MongoClient
@@ -9,7 +10,7 @@ db = client.deep_pro
 
 
 app = Flask(__name__)
-
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 
 @app.route('/')
