@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import hashlib
 import json
+from unittest import result
 from bson import ObjectId
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS  # flask 연결
@@ -106,6 +107,7 @@ def login():
     hashed_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()  # 복호화
     # print(hashed_pw)
 
+    # 아이디 비밀번호 검사
     result = db.ladder.find_one({
         "user_id": user_id,
         "password": hashed_pw,
@@ -124,6 +126,24 @@ def login():
     print(token)
 
     return jsonify({'message': 'success', 'token': token})
+
+
+########################################################################
+########################################################################
+########################################################################
+# userinfo
+########################################################################
+########################################################################
+########################################################################
+@app.route("/getuserinfo", methods=["GET"])
+def get_user_info(user):
+    result = db.ladder.find_one({
+        '_id': ObjectId(user['id'])
+    })
+
+    print(result)
+
+    return jsonify({'message': 'success', 'email': result['email']})
 
 
 if __name__ == '__main__':
