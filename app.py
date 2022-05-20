@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
+from functools import wraps
 import hashlib
 import json
 from unittest import result
 from bson import ObjectId
-from flask import Flask, jsonify, request, Response
+from flask import Flask, abort, jsonify, request, Response
 from flask_cors import CORS  # flask 연결
 from pymongo import MongoClient  # DB
 import jwt
@@ -18,6 +19,31 @@ db = client.ladder
 ########################################################################
 ########################################################################
 ########################################################################
+# 토근 활성화
+########################################################################
+########################################################################
+########################################################################
+
+
+def authorize(f):
+    @wraps(f)
+    def decorated_function():
+        if not 'Authorization' in request.headers:  # headers 에서 Authorization 인증을 하고
+            abort(401)  # Authorization 으로 토큰이 오지 않았다면 에러 401
+        # Authorization 이 headers에 있다면 token 값을 꺼내온다.
+        token = request.headers['Authorization']
+        try:
+            user = jwt.decode(token, SECRET_KEY, algorithms=[
+                              'HS256'])  # 꺼내온 token 값을 디코딩해서 꺼내주고
+        except:
+            abort(401)  # 디코딩이 안될 경우 에러 401
+        return f(user)
+    return decorated_function
+
+
+########################################################################
+########################################################################
+########################################################################
 # index
 ########################################################################
 ########################################################################
@@ -25,7 +51,8 @@ db = client.ladder
 
 
 @app.route('/')
-def index():
+def index(user):
+    print(user)
     return jsonify({'message': 'success'})
 
 
@@ -136,6 +163,7 @@ def login():
 ########################################################################
 ########################################################################
 @app.route("/getuserinfo", methods=["GET"])
+@authorize
 def get_user_info(user):
     result = db.ladder.find_one({
         '_id': ObjectId(user['id'])
