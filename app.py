@@ -35,16 +35,17 @@ def calculator_temporary():
 
         input_age = int(request.form['input_age'])
 
-        doc = {
+        result = {
             # 'user_id': user_id,
             # 'user_nick_name': user_nick_name,
-            'img_name': filename,
+            'result_img_name': filename,
             'input_age': input_age,
             'result_age': 10
             # 'timestamp': datetime.utcnow()   
         }
-        db.results.insert_one(doc)
-    return jsonify({'msg': '저장완료!', "filename": filename})
+        db.results.insert_one(result)
+        result["_id"] = str(result["_id"])
+        return jsonify({'msg': '저장완료!', "result": result})
 
 
 
