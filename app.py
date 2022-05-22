@@ -2,6 +2,7 @@ from audioop import findfactor
 from datetime import datetime
 from io import BytesIO
 import json
+from bson import ObjectId
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 from PIL import Image
@@ -38,6 +39,7 @@ def calculator_temporary():
         result = {
             # 'user_id': user_id,
             # 'user_nick_name': user_nick_name,
+            'post_id': '',
             'result_img_name': filename,
             'input_age': input_age,
             'result_age': 10
@@ -45,11 +47,11 @@ def calculator_temporary():
         }
         db.results.insert_one(result)
         result["_id"] = str(result["_id"])
-        return jsonify({'msg': '저장완료!', "result": result})
+        return jsonify({'msg': '저장되었습니다.', "result": result})
 
 
 
-# 결과 데이터 보내기
+# 결과 데이터 보내기(사용 안 함)
 @app.route('/calculate/<filename>', methods=['GET'])
 def get_file(filename):
     result = db.results.find_one({"img_name": filename})
@@ -74,19 +76,27 @@ def post_file():
         save_to = f'static/img/upload_img/{filename}'  # 경로지정
         file.save(save_to)  # 이미지 파일 저장
 
-        input_age = request.form['input_age']
+        result_id = request.form['result_id']
+        input_age = int(request.form['input_age'])
 
         doc = {
             # 'user_id': user_id,
             # 'user_nick_name': user_nick_name,
+            'result_id': result_id,
             'img_name': filename,
             'input_age': input_age,
             # 'timestamp': datetime.utcnow()   
         }
-    db.posts.insert_one(doc)
-    return jsonify({'msg': '저장완료!'})
+    db.posts.insert_one(doc) # posts DB에 저장
 
+    post = db.posts.find_one({"result_id": result_id}) # posts DB의 ObjectId 찾기
+    post_id = str(post["_id"])
 
+    db.results.update_one({"_id": ObjectId(result_id)}, { # result DB에 post_id 저장 
+        "$set": {"post_id": post_id}
+    })
+
+    return jsonify({'msg': '저장되었습니다.'})
 
 
 # @app.route('/posts', methods=['POST'])
