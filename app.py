@@ -21,7 +21,46 @@ cors = CORS(app, resources={r"*": {"origins": "*"}})
 def login_page():
     return render_template('index.html')
 
+# 측정(임시) 하기, 결과 데이터 저장하기
+@app.route('/calculate', methods=['POST'])
+def calculator_temporary():
+    files = request.files.to_dict() # ImmutableMultiDict을 객체로 변환
+    for file in files.values():
+        current_time = datetime.now() # 현재 시간
+        ext = file.filename.split('.')[-1]  # 이미지 확장자 추출
+        filename = f"{current_time.strftime('%Y%m%d%H%M%S')}.{ext}"
 
+        save_to = f'static/img/result_img/{filename}'  # 경로지정
+        file.save(save_to)  # 이미지 파일 저장
+
+        input_age = int(request.form['input_age'])
+
+        doc = {
+            # 'user_id': user_id,
+            # 'user_nick_name': user_nick_name,
+            'img_name': filename,
+            'input_age': input_age,
+            'result_age': 10
+            # 'timestamp': datetime.utcnow()   
+        }
+        db.results.insert_one(doc)
+    return jsonify({'msg': '저장완료!', "filename": filename})
+
+
+
+# 결과 데이터 보내기
+@app.route('/calculate/<filename>', methods=['GET'])
+def get_file(filename):
+    result = db.results.find_one({"img_name": filename})
+    print(result)
+    if result:
+        result["_id"] = str(result["_id"])
+        return jsonify({"message": "success", "result": result})
+    else:
+        return jsonify({"message": "fail"}), 404
+
+
+# 게시물 저장하기
 @app.route('/post', methods=['POST'])
 def post_file():
 # if user is not None:
@@ -44,18 +83,9 @@ def post_file():
             # 'timestamp': datetime.utcnow()   
         }
     db.posts.insert_one(doc)
-    return jsonify({'msg': '저장완료!', 'filename': filename})
+    return jsonify({'msg': '저장완료!'})
 
 
-# 파일 정보 보내기
-@app.route('/posts', methods=['POST'])
-def get_file():
-    data = json.loads(request.data)
-    filename = data.get("filename")
-    post = db.posts.find_one({'img_name': filename})
-    post["_id"] = str(post["_id"])
-    print(post)
-    return jsonify({'msg': '저장완료!', 'post': post})
 
 
 # @app.route('/posts', methods=['POST'])
