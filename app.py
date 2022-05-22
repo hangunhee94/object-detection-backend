@@ -50,10 +50,9 @@ def calculator_temporary():
         return jsonify({'msg': '저장되었습니다.', "result": result})
 
 
-
 # 결과 데이터 보내기(사용 안 함)
-@app.route('/calculate/<filename>', methods=['GET'])
-def get_file(filename):
+@app.route('/result/<filename>', methods=['GET'])
+def get_result(filename):
     result = db.results.find_one({"img_name": filename})
     print(result)
     if result:
@@ -61,6 +60,17 @@ def get_file(filename):
         return jsonify({"message": "success", "result": result})
     else:
         return jsonify({"message": "fail"}), 404
+
+
+# 결과 데이터 삭제하기
+@app.route('/result/<result_id>', methods=['DELETE'])
+def delete_result(result_id):
+    result = db.results.delete_one({"_id": ObjectId(result_id)})
+    
+    if result.deleted_count:
+        return jsonify({"message": "success"})
+    else:
+        return jsonify({"message": "fail"}), 403
 
 
 # 게시물 저장하기
