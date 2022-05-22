@@ -2,6 +2,7 @@ from audioop import findfactor
 from datetime import datetime
 from io import BytesIO
 import json
+import os
 from bson import ObjectId
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
@@ -65,9 +66,13 @@ def get_result(filename):
 # 결과 데이터 삭제하기
 @app.route('/result/<result_id>', methods=['DELETE'])
 def delete_result(result_id):
-    result = db.results.delete_one({"_id": ObjectId(result_id)})
+    result = db.results.find_one({"_id": ObjectId(result_id)})
+    result_img_name = result['result_img_name']
+    os.remove(f'./static/img/result_img/{result_img_name}') # 저장된 결과 이미지 파일 삭제
+
+    result_del = db.results.delete_one({"_id": ObjectId(result_id)}) # 저장된 결과 데이터 삭제
     
-    if result.deleted_count:
+    if result_del.deleted_count:
         return jsonify({"message": "success"})
     else:
         return jsonify({"message": "fail"}), 403
