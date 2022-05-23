@@ -10,26 +10,27 @@ from flask import Blueprint
 # DB 호출
 from . import config
 
+
 db = config.get_db()
 SECRET_KEY = config.get_key()
 
 blueprint = Blueprint("board", __name__, url_prefix='')
 
 
-def authorize(f):
-    @wraps(f)
-    def decorated_function():
-        if not 'Authorization' in request.headers:  # headers 에서 Authorization 인증을 하고
-            abort(401)  # Authorization 으로 토큰이 오지 않았다면 에러 401
-        # Authorization 이 headers에 있다면 token 값을 꺼내온다.
-        token = request.headers['Authorization']
-        try:
-            user = jwt.decode(token, SECRET_KEY, algorithms=[
-                              'HS256'])  # 꺼내온 token 값을 디코딩해서 꺼내주고
-        except:
-            abort(401)  # 디코딩이 안될 경우 에러 401
-        return f(user)
-    return decorated_function
+# def authorize(f):
+#     @wraps(f)
+#     def decorated_function():
+#         if not 'Authorization' in request.headers:  # headers 에서 Authorization 인증을 하고
+#             abort(401)  # Authorization 으로 토큰이 오지 않았다면 에러 401
+#         # Authorization 이 headers에 있다면 token 값을 꺼내온다.
+#         token = request.headers['Authorization']
+#         try:
+#             user = jwt.decode(token, SECRET_KEY, algorithms=[
+#                               'HS256'])  # 꺼내온 token 값을 디코딩해서 꺼내주고
+#         except:
+#             abort(401)  # 디코딩이 안될 경우 에러 401
+#         return f(user)
+#     return decorated_function
 
 
 # @blueprint.route('/')
@@ -40,33 +41,33 @@ def authorize(f):
 # 측정(임시) 하기, 결과 데이터 저장하기
 
 
-@blueprint.route('/calculate', methods=['POST'])
-@authorize
-def calculator_temporary(user):
-    files = request.files.to_dict()  # ImmutableMultiDict을 객체로 변환
-    for file in files.values():
-        current_time = datetime.now()  # 현재 시간
-        ext = file.filename.split('.')[-1]  # 이미지 확장자 추출
-        filename = f"{current_time.strftime('%Y%m%d%H%M%S')}.{ext}"
+# @blueprint.route('/calculate', methods=['POST'])
+# @authorize
+# def calculator_temporary(user):
+#     files = request.files.to_dict()  # ImmutableMultiDict을 객체로 변환
+#     for file in files.values():
+#         current_time = datetime.now()  # 현재 시간
+#         ext = file.filename.split('.')[-1]  # 이미지 확장자 추출
+#         filename = f"{current_time.strftime('%Y%m%d%H%M%S')}.{ext}"
 
-        print(user)
-        save_to = f'main/static/img/result/{filename}'  # 경로지정
-        file.save(save_to)  # 이미지 파일 저장
+#         print(user)
+#         save_to = f'main/static/img/result/{filename}'  # 경로지정
+#         file.save(save_to)  # 이미지 파일 저장
 
-        input_age = int(request.form['input_age'])
+#         input_age = int(request.form['input_age'])
 
-        result = {
-            'user_id': user['id'],
-            # 'user_nick_name': user_nick_name,
-            'post_id': '',
-            'result_img_name': filename,
-            'input_age': input_age,
-            'result_age': 10
-            # 'timestamp': datetime.utcnow()
-        }
-        db.results.insert_one(result)
-        result["_id"] = str(result["_id"])
-        return jsonify({'msg': '저장되었습니다.', "result": result})
+#         result = {
+#             'user_id': user['id'],
+#             # 'user_nick_name': user_nick_name,
+#             'post_id': '',
+#             'result_img_name': filename,
+#             'input_age': input_age,
+#             'result_age': 10
+#             # 'timestamp': datetime.utcnow()
+#         }
+#         db.results.insert_one(result)
+#         result["_id"] = str(result["_id"])
+#         return jsonify({'msg': '저장되었습니다.', "result": result})
 
 
 # 결과 데이터 보내기(사용 안 함)
@@ -99,12 +100,12 @@ def delete_result(result_id):
 
 # 게시물 저장하기
 @blueprint.route('/post', methods=['POST'])
-@authorize
+@config.authorize
 def post_file(user):
     # if user is not None:
     files = request.files.to_dict()  # ImmutableMultiDict을 객체로 변환
     for file in files.values():
-        current_time = datetime.now()  # 현재 시간
+        current_time = datetime.datetime.now()  # 현재 시간
         ext = file.filename.split('.')[-1]  # 이미지 확장자 추출
         # 이미지 이름 설정
         filename = f"{current_time.strftime('%Y%m%d%H%M%S')}.{ext}"

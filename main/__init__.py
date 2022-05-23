@@ -5,7 +5,8 @@
 ########################################################################
 ########################################################################
 ########################################################################
-from datetime import datetime, timedelta
+from datetime import timedelta
+import datetime
 from functools import wraps
 import hashlib
 import json
@@ -16,15 +17,24 @@ from flask_cors import CORS  # flask 연결
 from pymongo import MongoClient  # DB
 import jwt
 # 이미지 업로드
-# from PIL import Image
+from PIL import Image
 import base64
 import os
 from io import BytesIO
 from audioop import findfactor
-# from flask import g
+
+# 머신러닝 모델
+from mtcnn import MTCNN
+import cv2
+import numpy as np
+import tensorflow as tf
+from keras.models import load_model
+import time
+import math
 
 from . import member  # member 호출
-from . import board # board 호출
+from . import board  # board 호출
+from . import age_cal  # model 호출
 
 ########################################################################
 ########################################################################
@@ -70,3 +80,4 @@ db = client.ladder
 
 app.register_blueprint(member.blueprint)
 app.register_blueprint(board.blueprint)
+app.register_blueprint(age_cal.age_cal)
