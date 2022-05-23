@@ -52,11 +52,11 @@ def authorize(f):
 ########################################################################
 ########################################################################
 ########################################################################
-@blueprint.route('/')
-@authorize  # decorated 함수 적용
-def index(user):
-    # print(user)
-    return jsonify({'message': 'success'})
+# @blueprint.route('/')
+# @authorize  # decorated 함수 적용
+# def index(user):
+#     # print(user)
+#     return jsonify({'message': 'success'})
 
 
 ########################################################################
@@ -95,10 +95,10 @@ def signup():
             sign_error = 774
             return jsonify({'message': 'fail', 'sign_error': sign_error})
             # 중복 처리
-        elif db.ladder.find_one({'user_id': user_id_receive}):
+        elif db.member.find_one({'user_id': user_id_receive}):
             sign_error = 775
             return jsonify({'message': 'fail', 'sign_error': sign_error})
-        elif db.ladder.find_one({'email': email_receive}):
+        elif db.member.find_one({'email': email_receive}):
             sign_error = 776
             return jsonify({'message': 'fail', 'sign_error': sign_error})
     except:
@@ -115,7 +115,7 @@ def signup():
         'user_age': data.get('user_age'),
     }
 
-    db.ladder.insert_one(doc)
+    db.member.insert_one(doc)
 
     return jsonify({'message': 'success'})
 
@@ -138,7 +138,7 @@ def login():
     # print(hashed_pw)
 
     # 아이디 비밀번호 검사
-    result = db.ladder.find_one({
+    result = db.member.find_one({
         "user_id": user_id,
         "password": hashed_pw,
     })
@@ -153,7 +153,7 @@ def login():
         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 토큰 시간 적용
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    print(token)
+    # print(token)
 
     return jsonify({'message': 'success', 'token': token})
 
@@ -168,10 +168,10 @@ def login():
 @blueprint.route("/getuserinfo", methods=["GET"])
 @authorize
 def get_user_info(user):
-    result = db.ladder.find_one({
+    result = db.member.find_one({
         '_id': ObjectId(user['id'])
     })
 
-    print(result)
+    # print(result)
 
     return jsonify({'message': 'success', 'email': result['email']})

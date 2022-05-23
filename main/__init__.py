@@ -9,16 +9,22 @@ from datetime import datetime, timedelta
 from functools import wraps
 import hashlib
 import json
-import re
 from unittest import result
 from bson import ObjectId
 from flask import Flask, abort, jsonify, request, Response, Blueprint
 from flask_cors import CORS  # flask 연결
 from pymongo import MongoClient  # DB
 import jwt
+# 이미지 업로드
+# from PIL import Image
+import base64
+import os
+from io import BytesIO
+from audioop import findfactor
 # from flask import g
 
 from . import member  # member 호출
+from . import board # board 호출
 
 ########################################################################
 ########################################################################
@@ -63,3 +69,4 @@ db = client.ladder
 ########################################################################
 
 app.register_blueprint(member.blueprint)
+app.register_blueprint(board.blueprint)
