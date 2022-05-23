@@ -174,4 +174,4 @@ def get_user_info(user):
 
     # print(result)
 
-    return jsonify({'message': 'success', 'email': result['email']})
+    return jsonify({'message': 'success', 'email': result['user_id']})
