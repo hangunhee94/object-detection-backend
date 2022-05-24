@@ -12,7 +12,8 @@ import hashlib
 import json
 from unittest import result
 from bson import ObjectId
-from flask import Flask, abort, jsonify, request, Response, Blueprint
+from flask import Flask, abort, jsonify, request, Response, Blueprint, redirect
+import requests
 from flask_cors import CORS  # flask 연결
 from pymongo import MongoClient  # DB
 import jwt
