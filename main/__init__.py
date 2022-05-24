@@ -45,33 +45,11 @@ from . import age_cal  # model 호출
 
 
 app = Flask(__name__)  # app 객체 선언
-# SECRET_KEY = 'ladder'
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/WhisperTalk" # pymongo DB 경로 설정
-# salt = 'ladder'  # SECRET_KEY
-# now = str(datetime.now())
-# myHash = hashlib.sha512(str(now + salt).encode('utf-8')).hexdigest()
-# app.config['SECRET_KET'] = myHash
-# mongo = pymongo(app)
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # pymongo DB 경로 설정
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/ladder"
 client = MongoClient('localhost', 27017)
 db = client.ladder
-
-
-# def get_db():
-#     db = getattr(g, '_database', None)
-#     if db is None:
-#         db = g._database = connect_to_database()
-#     return db
-
-# @app.teardown_appcontext
-# def teardown_db(exception):
-#     db = getattr(g, '_database', None)
-#     if db is not None:
-#         db.close()
-
 
 ########################################################################
 ########################################################################

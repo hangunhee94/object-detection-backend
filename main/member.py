@@ -9,10 +9,6 @@ import requests
 from main import *
 from flask import Blueprint
 
-# DB 호출
-# from werkzeug.local import LocalProxy
-# db = LocalProxy(get_db)
-
 from . import config
 
 db = config.get_db()
@@ -25,31 +21,6 @@ blueprint = Blueprint("member", __name__, url_prefix='')
 ########################################################################
 ########################################################################
 ########################################################################
-# 토근 활성화
-########################################################################
-########################################################################
-########################################################################
-
-
-# def authorize(f):
-#     @wraps(f)
-#     def decorated_function():
-#         if not 'Authorization' in request.headers:  # headers 에서 Authorization 인증을 하고
-#             abort(401)  # Authorization 으로 토큰이 오지 않았다면 에러 401
-#         # Authorization 이 headers에 있다면 token 값을 꺼내온다.
-#         token = request.headers['Authorization']
-#         try:
-#             user = jwt.decode(token, SECRET_KEY, algorithms=[
-#                               'HS256'])  # 꺼내온 token 값을 디코딩해서 꺼내주고
-#         except:
-#             abort(401)  # 디코딩이 안될 경우 에러 401
-#         return f(user)
-#     return decorated_function
-
-
-########################################################################
-########################################################################
-########################################################################
 # index
 ########################################################################
 ########################################################################
@@ -57,7 +28,6 @@ blueprint = Blueprint("member", __name__, url_prefix='')
 @blueprint.route('/')
 @config.authorize  # decorated 함수 적용
 def index(user):
-    # print(user)
     return jsonify({'message': 'success'})
 
 
@@ -132,19 +102,16 @@ def signup():
 @blueprint.route("/login", methods=["POST"])
 def login():
     data = json.loads(request.data)
-    # print(data)
 
     user_id = data.get("user_id")
     password = data.get("password")
     hashed_pw = hashlib.sha256(password.encode('utf-8')).hexdigest()  # 복호화
-    # print(hashed_pw)
 
     # 아이디 비밀번호 검사
     result = db.member.find_one({
         "user_id": user_id,
         "password": hashed_pw,
     })
-    # print(result)
 
     if result is None:
         return jsonify({'message': 'fail'}), 401
@@ -155,7 +122,6 @@ def login():
         'exp': datetime.datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 토큰 시간 적용
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-    # print(token)
 
     return jsonify({'message': 'success', 'token': token})
 
@@ -174,9 +140,8 @@ def get_user_info(user):
         '_id': ObjectId(user['id'])
     })
 
-    # print(result)
-
     return jsonify({'message': 'success', 'email': result['user_id']})
+
 
 ########################################################################
 ########################################################################
@@ -185,20 +150,13 @@ def get_user_info(user):
 ########################################################################
 ########################################################################
 ########################################################################
-
-
 @blueprint.route('/oauth',  methods=["POST"])
 def oauth():
     data = json.loads(request.data)
-    # code = str(request.args.get('code'))
     code = data.get("code")
     # XXXXXXXXX 자리에 RESET API KEY값을 사용
     resToken = getAccessToken("0e70ecca261b084cdb1cb36a41645ec2", str(code))
-    print(resToken)
     profile = kakaoprofile(resToken['access_token'])
-
-    print(profile['kakao_account']['email'])
-    print(profile['id'])
 
     email = profile['kakao_account']['email']
     id = profile['id']
@@ -220,10 +178,7 @@ def oauth():
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-    # url = "http: // localhost: 5500/templates/post.html"
     return jsonify({'message': 'success', 'token': token, 'id': id, 'email': email, 'code': code})
-
-    # return jsonify({'message': 'code=' + str(code) + '<br/>response for token=' + str(resToken) + '<br/>profile=' + str(profile)})
 
 
 def getAccessToken(clientId, code):  # 세션 코드값 code 를 이용해서 ACESS TOKEN과 REFRESH TOKEN을 발급 받음

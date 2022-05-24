@@ -1,43 +1,17 @@
 from main import *
 from flask import Blueprint as age_cal
 
-# DB 호출
-# from werkzeug.local import LocalProxy
-# db = LocalProxy(get_db)
-
 from . import config
 
 db = config.get_db()
 SECRET_KEY = config.get_key()
 
-# blueprint = Blueprint("member", __name__, url_prefix='')
-
 age_cal = Blueprint("age_cal", __name__,
                     static_folder='static', template_folder='templates')
-
-
-# def authorize(f):
-#     @wraps(f)
-#     def decorated_function():
-#         if not 'Authorization' in request.headers:  # headers 에서 Authorization 인증을 하고
-#             abort(401)  # Authorization 으로 토큰이 오지 않았다면 에러 401
-#         # Authorization 이 headers에 있다면 token 값을 꺼내온다.
-#         token = request.headers['Authorization']
-#         try:
-#             user = jwt.decode(token, SECRET_KEY, algorithms=[
-#                               'HS256'])  # 꺼내온 token 값을 디코딩해서 꺼내주고
-#         except:
-#             abort(401)  # 디코딩이 안될 경우 에러 401
-#         return f(user)
-#     return decorated_function
-
 
 sex_model = load_model('main/model/all_face_sex_model.h5')
 male_age_model = load_model('main/model/all_face_male_age_model.h5')
 female_age_model = load_model('main/model/all_face_female_age_model.h5')
-# asian_age_model = load_model('asian_age_model.h5')
-# all_age_model = load_model('all_face_model.h5')
-
 
 def process_and_predict(file):
     image = tf.keras.preprocessing.image.load_img(file, target_size=(200, 200))
@@ -51,14 +25,10 @@ def process_and_predict(file):
     if sex_pred[0][0] > 0.5:
         sex = '여자'
         age_pred = female_age_model.predict(input_arr)
-        # age_pred = asian_age_model.predict(input_arr)
-    #   age_pred = all_age_model.predict(input_arr)
         age_pred = float(age_pred)
     else:
         sex = '남자'
         age_pred = male_age_model.predict(input_arr)
-        # age_pred = asian_age_model.predict(input_arr)
-    #   age_pred = all_age_model.predict(input_arr)
         age_pred = float(age_pred)
     
     return sex, age_pred
@@ -118,36 +88,19 @@ def age_cal_model(user, filename, extension, save_to):
 @age_cal.route('/calculator', methods=['POST'])
 @config.authorize
 def calculator(user):
-    # file_receive = request.files['file_give']
-    # extension = file_receive.filename.split('.')[-1]
-
-    # now = datetime.datetime.now()
-    # time_now = now.strftime('%Y-%m-%d-%H-%M-%S')
-    # filename = f'img_{time_now}'
-    # save_to = f'main/static/img/original/{filename}.{extension}'
-    # file_receive.save(save_to)
     files = request.files.to_dict()  # ImmutableMultiDict을 객체로 변환
     for file in files.values():
         current_time = datetime.datetime.now()  # 현재 시간
         extension = file.filename.split('.')[-1]  # 이미지 확장자 추출
         filename = f"{current_time.strftime('%Y%m%d%H%M%S')}"
 
-        # print(user)
         save_to = f'static/img/original/{filename}.{extension}'  # 경로지정
         file.save('main/' + save_to)  # 이미지 파일 저장
 
     input_age = request.form['input_age']
-    # print(filename)
-
-    # # MongoDB 저장 만들어야함
-    # doc = {
-    #     'img_title': save_to
-    # }
-    # db.originals.insert_one(doc)
 
     time.sleep(1)
 
     person, result = age_cal_model(user, filename, extension, save_to)
     result['input_age'] = input_age
     return jsonify({'person': person, 'result': result})
-
