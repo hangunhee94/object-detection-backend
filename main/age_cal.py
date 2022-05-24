@@ -60,7 +60,7 @@ def process_and_predict(file):
         # age_pred = asian_age_model.predict(input_arr)
     #   age_pred = all_age_model.predict(input_arr)
         age_pred = float(age_pred)
-
+    
     return sex, age_pred
 
 
@@ -126,6 +126,7 @@ def calculator(user):
         save_to = f'static/img/original/{filename}.{extension}'  # 경로지정
         file.save('main/' + save_to)  # 이미지 파일 저장
 
+    input_age = request.form['input_age']
     # print(filename)
 
     # # MongoDB 저장 만들어야함
@@ -137,4 +138,5 @@ def calculator(user):
     time.sleep(1)
 
     result = age_cal_model(user, save_to, filename, extension, save_to)
+    result['input_age'] = input_age
     return jsonify({'result': result})
