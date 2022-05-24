@@ -175,3 +175,75 @@ def get_user_info(user):
     # print(result)
 
     return jsonify({'message': 'success', 'email': result['user_id']})
+
+########################################################################
+########################################################################
+########################################################################
+# kakao_login
+########################################################################
+########################################################################
+########################################################################
+
+
+@blueprint.route('/oauth',  methods=["GET"])
+def oauth():
+    code = str(request.args.get('code'))
+    # XXXXXXXXX 자리에 RESET API KEY값을 사용
+    resToken = getAccessToken("0e70ecca261b084cdb1cb36a41645ec2", str(code))
+    print(resToken)
+    profile = kakaoprofile(resToken['access_token'])
+
+    print(profile['kakao_account']['email'])
+    print(profile['id'])
+
+    email = profile['kakao_account']['email']
+    id = profile['id']
+
+    user = db.member.find_one({'email': email})
+
+    if user is None:
+        db.member.insert_one({'email': email, 'id': id})
+
+    result = db.member.find_one({
+        "email": email,
+        "id": id,
+    })
+    if result is None:
+        return jsonify({'message': 'fail'}), 401
+    payload = {
+        'id': str(result['_id']),
+        'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 토큰 시간 적용
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+    return jsonify({'message': 'success', 'token': token})
+
+    # return jsonify({'message': 'code=' + str(code) + '<br/>response for token=' + str(resToken) + '<br/>profile=' + str(profile)})
+
+
+def getAccessToken(clientId, code):  # 세션 코드값 code 를 이용해서 ACESS TOKEN과 REFRESH TOKEN을 발급 받음
+    url = "https://kauth.kakao.com/oauth/token"
+    payload = "grant_type=authorization_code"
+    payload += "&client_id=" + clientId
+    payload += "&redirect_url=http%3A%2F%2Flocalhost%3A5005%2Foauth&code=" + code
+    headers = {
+        'Content-Type': "application/x-www-form-urlencoded",
+        'Cache-Control': "no-cache",
+    }
+    reponse = requests.request("POST", url, data=payload, headers=headers)
+    access_token = json.loads(((reponse.text).encode('utf-8')))
+    return access_token
+
+##kakao profile-list##
+
+
+def kakaoprofile(accessToken):
+    url = "https://kapi.kakao.com/v2/user/me"
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        'Authorization': "Bearer " + accessToken,
+    }
+    response = requests.request("GET", url, headers=headers)
+    access_token = json.loads(((response.text).encode('utf-8')))
+
+    return access_token
