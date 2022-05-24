@@ -64,11 +64,21 @@ def process_and_predict(file):
     return sex, age_pred
 
 
-def age_cal_model(user, img_file, filename, extension, save_to):
-    img = cv2.imread('main/' + img_file)
+def age_cal_model(user, filename, extension, save_to):
+    img = cv2.imread('main/' + save_to)
     detector = MTCNN()
     detections = detector.detect_faces(img)
-    
+    if len(detections) == 0:
+        person = 0
+        doc = {}
+        os.remove('main/' + save_to)
+        return person, doc
+    elif len(detections) >= 2:
+        person = 2
+        doc = {}
+        os.remove('main/' + save_to)
+        return person, doc
+
     min_conf = 0.9
     imgNum = 0
     for det in detections:
@@ -101,8 +111,8 @@ def age_cal_model(user, img_file, filename, extension, save_to):
         db.results.insert_one(doc)
 
         doc["_id"] = str(doc["_id"])
-
-    return doc
+        person = 1
+    return person, doc
 
 
 @age_cal.route('/calculator', methods=['POST'])
@@ -137,6 +147,7 @@ def calculator(user):
 
     time.sleep(1)
 
-    result = age_cal_model(user, save_to, filename, extension, save_to)
+    person, result = age_cal_model(user, filename, extension, save_to)
     result['input_age'] = input_age
-    return jsonify({'result': result})
+    return jsonify({'person': person, 'result': result})
+
