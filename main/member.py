@@ -4,6 +4,8 @@
 ########################################################################
 ########################################################################
 
+
+import requests
 from main import *
 from flask import Blueprint
 
@@ -52,11 +54,11 @@ blueprint = Blueprint("member", __name__, url_prefix='')
 ########################################################################
 ########################################################################
 ########################################################################
-# @blueprint.route('/')
-# @authorize  # decorated 함수 적용
-# def index(user):
-#     # print(user)
-#     return jsonify({'message': 'success'})
+@blueprint.route('/')
+@config.authorize  # decorated 함수 적용
+def index(user):
+    # print(user)
+    return jsonify({'message': 'success'})
 
 
 ########################################################################
@@ -185,9 +187,11 @@ def get_user_info(user):
 ########################################################################
 
 
-@blueprint.route('/oauth',  methods=["GET"])
+@blueprint.route('/oauth',  methods=["POST"])
 def oauth():
-    code = str(request.args.get('code'))
+    data = json.loads(request.data)
+    # code = str(request.args.get('code'))
+    code = data.get("code")
     # XXXXXXXXX 자리에 RESET API KEY값을 사용
     resToken = getAccessToken("0e70ecca261b084cdb1cb36a41645ec2", str(code))
     print(resToken)
@@ -202,21 +206,22 @@ def oauth():
     user = db.member.find_one({'email': email})
 
     if user is None:
-        db.member.insert_one({'email': email, 'id': id})
+        db.member.insert_one({'email': email, 'user_id': id})
 
     result = db.member.find_one({
         "email": email,
-        "id": id,
+        "user_id": id,
     })
     if result is None:
         return jsonify({'message': 'fail'}), 401
     payload = {
         'id': str(result['_id']),
-        'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 토큰 시간 적용
+        'exp': datetime.datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 토큰 시간 적용
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-    return jsonify({'message': 'success', 'token': token})
+    # url = "http: // localhost: 5500/templates/post.html"
+    return jsonify({'message': 'success', 'token': token, 'id': id, 'email': email, 'code': code})
 
     # return jsonify({'message': 'code=' + str(code) + '<br/>response for token=' + str(resToken) + '<br/>profile=' + str(profile)})
 
