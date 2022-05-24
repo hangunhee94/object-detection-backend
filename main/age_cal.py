@@ -68,7 +68,7 @@ def age_cal_model(user, img_file, filename, extension, save_to):
     img = cv2.imread('main/' + img_file)
     detector = MTCNN()
     detections = detector.detect_faces(img)
-
+    
     min_conf = 0.9
     imgNum = 0
     for det in detections:

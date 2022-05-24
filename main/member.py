@@ -206,7 +206,7 @@ def oauth():
     user = db.member.find_one({'email': email})
 
     if user is None:
-        db.member.insert_one({'email': email, 'id': id})
+        db.member.insert_one({'email': email, 'user_id': id})
 
     result = db.member.find_one({
         "email": email,
