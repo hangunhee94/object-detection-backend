@@ -122,13 +122,14 @@ def post_file(user):
     result = db.results.find_one({"_id": ObjectId(result_id)})
 
     original_id = result['original_title']
+    input_age = request.form['input_age']
 
     doc = {
         'user_id': user['id'],
         # 'user_nick_name': user_nick_name,
         'result_id': result_id,
         'img_name': original_id,
-        # 'input_age': input_age,
+        'input_age': input_age,
         # 'timestamp': datetime.utcnow()
     }
     db.originals.insert_one(doc)  # posts DB에 저장
