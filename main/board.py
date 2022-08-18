@@ -1,15 +1,6 @@
-########################################################################
-########################################################################
-# 게시판의 내용 읽기, 쓰기, 목록 확인, 수정, 삭제 등
-########################################################################
-########################################################################
-
 from main import *
 from flask import Blueprint
-
-# DB 호출
 from . import config
-
 
 db = config.get_db()
 SECRET_KEY = config.get_key()
@@ -24,13 +15,13 @@ def delete_result(user, result_id):
     result = db.results.find_one(
         {"_id": ObjectId(result_id), "user_id": user['id']})
     result_img_name = result['result_title']
-    os.remove(f'main/{result_img_name}')  # result 이미지 삭제
+    os.remove(f'main/{result_img_name}')
 
     original_img_name = result['original_title']
-    os.remove(f'main/{original_img_name}')  # original 이미지 삭제
+    os.remove(f'main/{original_img_name}')
 
     result_del = db.results.delete_one(
-        {"_id": ObjectId(result_id)})  # 저장된 결과 데이터 삭제
+        {"_id": ObjectId(result_id)})
 
     if result_del.deleted_count:
         return jsonify({"message": "success"})
@@ -54,13 +45,13 @@ def post_file(user):
         'img_name': original_id,
         'input_age': input_age,
     }
-    db.originals.insert_one(doc)  # posts DB에 저장
+    db.originals.insert_one(doc)
 
     post = db.originals.find_one(
-        {"result_id": result_id})  # posts DB의 ObjectId 찾기
+        {"result_id": result_id})
     post_id = str(post["_id"])
 
-    db.results.update_one({"_id": ObjectId(result_id)}, {  # result DB에 post_id 저장
+    db.results.update_one({"_id": ObjectId(result_id)}, {
         "$set": {"post_id": post_id}
     })
 
