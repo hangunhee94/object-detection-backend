@@ -60,7 +60,6 @@ def age_cal_model(user, filename, extension, save_to):
             else:
                 cropped = img[int(y - h/4): int(y + h + h/4),
                               int((2*x + w - h)/2 - h/4): int((2*x + w + h)/2 + h/4)]
-        # 이미지를 저장
             cv2.imwrite(
                 f'main/static/img/result/{filename}_{str(imgNum)}.{extension}', cropped)
             imgNum += 1
@@ -68,7 +67,7 @@ def age_cal_model(user, filename, extension, save_to):
     for i in range(imgNum):
         exam_img = f'static/img/result/{filename}_{str(i)}.{extension}'
         sex, age_pred = process_and_predict('main/' + exam_img)
-        age_pred = round(age_pred)  # 소수점 반올림
+        age_pred = round(age_pred)
         ages_dict[exam_img] = [sex, age_pred]
         doc = {
             'user_id': user['id'],
@@ -90,12 +89,12 @@ def age_cal_model(user, filename, extension, save_to):
 def calculator(user):
     files = request.files.to_dict()  # ImmutableMultiDict을 객체로 변환
     for file in files.values():
-        current_time = datetime.datetime.now()  # 현재 시간
+        current_time = datetime.datetime.now()
         extension = file.filename.split('.')[-1]  # 이미지 확장자 추출
         filename = f"{current_time.strftime('%Y%m%d%H%M%S')}"
 
-        save_to = f'static/img/original/{filename}.{extension}'  # 경로지정
-        file.save('main/' + save_to)  # 이미지 파일 저장
+        save_to = f'static/img/original/{filename}.{extension}'
+        file.save('main/' + save_to)
 
     input_age = request.form['input_age']
 
