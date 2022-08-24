@@ -47,13 +47,47 @@
 <br>
 
 ## 4. 핵심 트러블 슈팅
-### 4.1. 
+### 4.1. Kakao Login 구현 시, 자동 회원가입 이슈
 
-</br>
+- Kakao Login 구현 도중 기존 Kakao 이메일로 접속을 하였을 때, 구현한 서비스의 로그인에 연동 실패
 
-## 5. 그 외 트러블 슈팅    
-### 5.1. 
+- DB에 Kakao 이메일에 대한 정보가 없기 때문에 발생하는 오류로 파악
 
+- Kakao developer를 통해 받은 access_token 값을 이용하여 Kakaoprofile에서 email 과 id값을 받아와 
+  if문을 통해 DB에 없는 email 이라면, 추가해주도록 설정
+  ```
+  def oauth():
+    code = str(request.args.get('code'))
+    # XXXXXXXXX 자리에 RESET API KEY값을 사용
+    resToken = getAccessToken("XXXXXXXXXXXXXXXXX", str(code))
+    print(resToken)
+    profile = kakaoprofile(resToken['access_token'])
+
+    print(profile['kakao_account']['email'])
+    print(profile['id'])
+
+    email = profile['kakao_account']['email']
+    id = profile['id']
+
+    user = db.member.find_one({'email': email})
+
+    if user is None:
+        db.member.insert_one({'email': email, 'id': id})
+
+    result = db.member.find_one({
+        "email": email,
+        "id": id,
+    })
+    if result is None:
+        return jsonify({'message': 'fail'}), 401
+    payload = {
+        'id': str(result['_id']),
+        'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 토큰 시간 적용
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+    return jsonify({'message': 'success', 'token': token})
+  ```
 </br>
 
 ## 6. 회고 / 느낀점
