@@ -22,7 +22,7 @@
 
 ## 2. 사용 기술
 #### `Back-end`
-  - Django
+  - Flask
 
 #### `Front-end`
   - HTML5
