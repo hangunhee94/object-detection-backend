@@ -15,9 +15,9 @@
     - 데이터 분석, AI 모델 개발
 
   - 엄관용(팀장) : frontend : CSS UI(후반작업) / backend : main
-  - 나성근 : frontend : login / backend : 머신러닝 데이터 분류, 코드단 세팅
-  - 한건희 : frontend : sginup / backend : sginup 
-  - 이동현 : frontend : main / backend : login
+  - 나성근 : frontend : login 페이지 / backend : 머신러닝 데이터 분류, 코드단 세팅
+  - 한건희 : frontend : signup 페이지 / backend : signup 
+  - 이동현 : frontend : main 페이지 / backend : login
 </br>
 
 ## 2. 사용 기술
@@ -42,7 +42,8 @@
 
 
 ### 3.2. API    
-[상세 내용 참고](https://www.notion.so/12-API-6e9db449ac3948b09aea83d5dde330b0)
+![age_detection_API](https://user-images.githubusercontent.com/104430302/188553629-0b3a1723-58fa-40ab-9f3a-23add1fb0117.PNG)
+
 
 <br>
 
